@@ -1,17 +1,21 @@
 import java.util.concurrent.TimeUnit;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import java.lang.Math;
 
 public class main {
     public static void main(String[] args)
     {
-        Race race = new Race(10, 2);
-        Horse horse1 = new Horse('A', "Horse1", 0.5);
-        Horse horse2 = new Horse('B', "Horse2", 0.5);
-        //Horse horse3 = new Horse('C', "Horse3", 0.5);
-        race.addHorse(horse1, 0);
-        race.addHorse(horse2, 1);
+        RaceWindow window = new RaceWindow();
+        
+        
        // race.addHorse(horse3, 4);
  
-        race.startRace();
+        //race.startRace();
+        //close the window
+        window.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
     }
 }
