@@ -9,11 +9,11 @@ public class RaceWindow {
 
     public RaceWindow() {
         frame = new JFrame("Horse Race Simulator");
-        panel = new RacePanel();
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
-        frame.add(panel);
+        frame.pack();
+        //frame.add(panel);
 
         JMenuBar menubar = new JMenuBar();
         JMenu menu = new JMenu("Menu");
@@ -34,7 +34,17 @@ public class RaceWindow {
                     Horse horse2 = new Horse('B', "Horse2", 0.5);
                     race.addHorse(horse1, 0);
                     race.addHorse(horse2, 1);
-                    race.startRace(); 
+                    panel = new RacePanel(race.getHorses(), race.getRaceLength());
+                    race.setRacePanel(panel);
+                    frame.getContentPane().removeAll(); // clear previous contents
+                    frame.add(panel);
+                    frame.revalidate(); // refresh layout
+                    frame.repaint();
+
+                    // Start the race (will update the panel every move)
+                    Thread raceThread = new Thread(() -> race.startRace());
+                    raceThread.start();
+                    
                 }
             }
         });
@@ -110,28 +120,49 @@ public class RaceWindow {
         }
     }
 
-    // Inner class for custom drawing
     class RacePanel extends JPanel 
     {
-        protected void paintComponent(Graphics g, int numOfLanes) 
+        private Horse[] horses;
+        private int laneHeight = 50;
+        private int lanePixelLength = 800;
+        private int trackLength;
+
+        public RacePanel(Horse[] horses, int trackLength) 
         {
-            super.paintComponent(g);
-
-            // Draw the race track
-            g.setColor(Color.GRAY);
-            g.fillRect(50, 100, 700, 300);
-
-            // Draw lanes
-            g.setColor(Color.WHITE);
-            for (int i = 0; i <= numOfLanes; i++) {
-                g.drawLine(50, 100 + i * 50, 750, 100 + i * 50);
-            }
-
-            // Draw a horse (example)
-            g.setColor(Color.BLUE);
-            g.fillOval(100, 125, 50, 25); // Example horse
+            this.horses = horses;
+            setPreferredSize(new Dimension(lanePixelLength + 50, horses.length * laneHeight + 50));
+            this.trackLength = trackLength;
         }
 
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
 
+            for (int i = 0; i < horses.length; i++) 
+            {
+                int y = i * laneHeight;
+
+                // Draw lane
+                g.setColor(Color.LIGHT_GRAY);
+                g.fillRect(0, y, lanePixelLength, laneHeight);
+
+                // Draw lane separator
+                g.setColor(Color.BLACK);
+                g.drawLine(0, y, lanePixelLength, y);
+
+                if(horses[i] != null)
+                {
+                    Horse horse = horses[i];
+
+                    // Calculate horse position
+                    double progress = horse.getDistanceTravelled() / (double) trackLength;
+                    int x = (int) (progress * lanePixelLength);
+
+                    // Draw horse
+                    g.fillOval(x, y + 10, 30, 30);
+                }
+            }
+        }
     }
+
 }

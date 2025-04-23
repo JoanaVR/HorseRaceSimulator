@@ -16,6 +16,7 @@ public class Horse
     private int mDistanceTravelled;
     private boolean mHasFallen;
     
+    
       
     //Constructor of class Horse
     public Horse(char horseSymbol, String horseName, double horseConfidence)

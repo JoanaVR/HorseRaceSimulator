@@ -12,6 +12,7 @@ public class Race
 {
     private int raceLength;
     private Horse horses[];
+    private RaceWindow.RacePanel panel;
 
     /**
      * Constructor for objects of class Race
@@ -24,6 +25,20 @@ public class Race
         // initialise instance variables
         raceLength = distance;
         horses = new Horse[numOfHorses];
+    }
+
+    public int getRaceLength()
+    {
+        return raceLength;
+    }   
+    public Horse[] getHorses()
+    {
+        return horses;
+    }
+    
+
+    public void setRacePanel(RaceWindow.RacePanel panel) {
+        this.panel = panel;
     }
     
     /**
@@ -73,6 +88,7 @@ public class Race
      * then repeatedly moved forward until the 
      * race is finished
      */
+    
     public void startRace()
     {
         //if there arent enough horses to start the race
@@ -106,6 +122,9 @@ public class Race
                         
             //print the race positions
             printRace();
+            if (panel != null) {
+                panel.repaint();
+            }
             
             //if any of the three horses has won the race is finished
             if ( raceFinished()) 
@@ -117,7 +136,6 @@ public class Race
                 TimeUnit.MILLISECONDS.sleep(100);
             }catch(Exception e){}
         }
-        printRace();
     }
 
     private boolean raceFinished()
