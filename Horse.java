@@ -11,7 +11,7 @@ public class Horse
 {
     //Fields of class Horse
     private String mHorseName;
-    private char mHorseSymbol;
+    private String mHorseSymbol;
     private double mHorseConfidence;
     private int mDistanceTravelled;
     private boolean mHasFallen;
@@ -19,7 +19,7 @@ public class Horse
     
       
     //Constructor of class Horse
-    public Horse(char horseSymbol, String horseName, double horseConfidence)
+    public Horse(String horseSymbol, String horseName, double horseConfidence)
     {
         this.mHorseSymbol = horseSymbol;
         this.mHorseName = horseName;
@@ -46,7 +46,7 @@ public class Horse
         return this.mHorseName;
     }
     
-    public char getSymbol()
+    public String getSymbol()
     {
         return this.mHorseSymbol;
     }
@@ -67,7 +67,7 @@ public class Horse
         this.mHorseConfidence = newConfidence;
     }
     
-    public void setSymbol(char newSymbol)
+    public void setSymbol(String newSymbol)
     {
         this.mHorseSymbol = newSymbol;
     }

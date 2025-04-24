@@ -24,16 +24,16 @@ public class RaceWindow {
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-
                 RaceInfo info = askUser(frame);
 
                 if(info != null)
                 {
-                    Race race = new Race(info.raceLength, info.numOfHorses);
-                    Horse horse1 = new Horse('A', "Horse1", 0.5);
-                    Horse horse2 = new Horse('B', "Horse2", 0.5);
-                    race.addHorse(horse1, 0);
-                    race.addHorse(horse2, 1);
+                    Race race = new Race(info.raceLength, info.numOfLanes);
+                    for(int i = 0; i < info.numOfHorses; i++)
+                    {
+                        HorseInfo horseInfo = getHorseInfo(frame);
+                        race.addHorse(new Horse(horseInfo.horseSymbol, horseInfo.horseName, horseInfo.horseConfidence), i);
+                    }
                     panel = new RacePanel(race.getHorses(), race.getRaceLength());
                     race.setRacePanel(panel);
                     frame.getContentPane().removeAll(); // clear previous contents
@@ -66,13 +66,15 @@ public class RaceWindow {
     static class RaceInfo
     {
         int raceLength;
-        int numOfHorses;
+        int numOfLanes;
         String metricUnit;
+        int numOfHorses;
 
         RaceInfo() {
             this.raceLength = 0;
-            this.numOfHorses = 0;
+            this.numOfLanes = 0;
             this.metricUnit = null;
+            this.numOfHorses = 0;
         }
     };
     
@@ -81,23 +83,28 @@ public class RaceWindow {
         String[] units = {"metes", "yards", "miles"};
         String[] lengths = new String[]{"10", "30", "50"};
         String[] lanes = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+        String[] horses = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
 
         JComboBox<String> jcunits = new JComboBox<>(units);
         JComboBox<String> jclength = new JComboBox<>(lengths);
         JComboBox<String> jclanes = new JComboBox<>(lanes);
+        JComboBox<String> jchorses = new JComboBox<>(horses);
 
         jcunits.setEditable(true);
         jclength.setEditable(true);
         jclanes.setEditable(true);
+        jchorses.setEditable(true);
 
         // Create a panel to hold the combo boxes
-        JPanel panel = new JPanel(new GridLayout(3, 2));
+        JPanel panel = new JPanel(new GridLayout(4, 2));
         panel.add(new JLabel("Select Metric Unit:"));
         panel.add(jcunits);
         panel.add(new JLabel("Select Race Length:"));
         panel.add(jclength);
         panel.add(new JLabel("Select Number of Lanes:"));
         panel.add(jclanes);
+        panel.add(new JLabel("Select Number of Horses:"));
+        panel.add(jchorses);
 
         System.out.println("Opening race settings dialog...");
 
@@ -110,9 +117,92 @@ public class RaceWindow {
             RaceInfo raceInfo = new RaceInfo();
             raceInfo.metricUnit = (String) jcunits.getSelectedItem();
             raceInfo.raceLength = Integer.parseInt((String) jclength.getSelectedItem()); 
-            raceInfo.numOfHorses = Integer.parseInt((String) jclanes.getSelectedItem()); 
+            raceInfo.numOfLanes = Integer.parseInt((String) jclanes.getSelectedItem()); 
+            raceInfo.numOfHorses = Integer.parseInt((String) jchorses.getSelectedItem());
 
             return raceInfo;
+        } 
+        else 
+        {
+            return null;
+        }
+    }
+
+    //fucntiont hat will allow the user to customise each horse.
+    static class HorseInfo
+    {
+        String horseName;
+        String horseSymbol;
+        double horseConfidence;
+        String breed;
+        String color;
+        boolean hasSaddle;
+        boolean hasHorseShoes;
+        
+        HorseInfo() {
+            this.horseName = null;
+            this.horseSymbol = "X";
+            this.horseConfidence = 0.5;
+            this.breed = null;
+            this.color = null;
+            this.hasSaddle = false;
+            this.hasHorseShoes = false;
+        }
+    };
+    
+    static HorseInfo getHorseInfo(JFrame parent) {
+        
+        String[] name = {""};
+        String[] symbol = new String[]{""};
+        String[] breed = new String[]{"Arabian Horse", "Shire Horse", "Appaloosa", "Thoroughbred", "Clydesdale"};
+        String[] colour = new String[]{"Black", "White", "Brown", "Baige", "Multicoloured"};
+        String[] saddle = new String[]{"false", "true"};
+        String[] horseshoe = new String[]{"false", "true"};
+
+
+        JComboBox<String> jcname = new JComboBox<>(name);
+        JComboBox<String> jcsymbol = new JComboBox<>(symbol);
+        JComboBox<String> jcbreed = new JComboBox<>(breed);
+        JComboBox<String> jccolour = new JComboBox<>(colour);
+        JComboBox<String> jcsaddle = new JComboBox<>(saddle);
+        JComboBox<String> jchorseshoe = new JComboBox<>(horseshoe);
+
+        jcname.setEditable(true);
+        jcsymbol.setEditable(true);
+        jcbreed.setEditable(true);
+        jccolour.setEditable(true);
+        jcsaddle.setEditable(true);
+        jchorseshoe.setEditable(true);
+
+        // Create a panel to hold the combo boxes
+        JPanel panel = new JPanel(new GridLayout(6, 2));
+        panel.add(new JLabel("Enter Horse Name:"));
+        panel.add(jcname);
+        panel.add(new JLabel("Enter Horse Symbol:"));
+        panel.add(jcsymbol);
+        panel.add(new JLabel("Select Horse Breed:"));
+        panel.add(jcbreed);
+        panel.add(new JLabel("Select Horse Colour:"));
+        panel.add(jccolour);
+        panel.add(new JLabel("Does this horse ahve a saddle:"));
+        panel.add(jcsaddle);
+        panel.add(new JLabel("DOes this horse have horseshoes:"));
+        panel.add(jchorseshoe);
+
+        // Show the dialog and get the user's response
+        int result = JOptionPane.showConfirmDialog(parent, panel, "Race Settings", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        // parent.setVisible(true);
+        if (result == JOptionPane.OK_OPTION) {
+            // Retrieve the selected values
+            HorseInfo hourseInfo = new HorseInfo();
+            hourseInfo.horseName = (String) jcname.getSelectedItem();
+            hourseInfo.horseSymbol = (String) jcsymbol.getSelectedItem(); 
+            hourseInfo.breed = (String) jcbreed.getSelectedItem(); 
+            hourseInfo.color = (String) jccolour.getSelectedItem();
+            hourseInfo.hasSaddle = Boolean.valueOf((String) jcsaddle.getSelectedItem());
+            hourseInfo.hasHorseShoes = Boolean.valueOf((String) jchorseshoe.getSelectedItem());
+
+            return hourseInfo;
         } 
         else 
         {
@@ -159,7 +249,8 @@ public class RaceWindow {
                     int x = (int) (progress * lanePixelLength);
 
                     // Draw horse
-                    g.fillOval(x, y + 10, 30, 30);
+                    g.drawString(horse.getSymbol(), x, y +20);
+                    //g.fillOval(x, y + 10, 30, 30);
                 }
             }
         }

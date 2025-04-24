@@ -13,6 +13,9 @@ public class Race
     private int raceLength;
     private Horse horses[];
     private RaceWindow.RacePanel panel;
+    int weather = 0; // 0 - sunny, 1 - rainy, 2 - snowy, 3 - windy
+    int trackCondition = 0; // 0 - dry, 1 - wet, 2 - icy
+    double chanceOfFalling = 0.1; //chance of falling
 
     /**
      * Constructor for objects of class Race
@@ -25,6 +28,9 @@ public class Race
         // initialise instance variables
         raceLength = distance;
         horses = new Horse[numOfHorses];
+        //randomly set the weather and track condition
+        weather = (int)(Math.random()*4);
+        trackCondition = (int)(Math.random()*3);
     }
 
     public int getRaceLength()
@@ -60,6 +66,25 @@ public class Race
         else
         {
             System.out.println("Cannot add horse to lane " + laneNumber + " because it is already occupied by " + horses[laneNumber].getName());
+        }
+        //change each horse's confidence depending on the weather and track condition
+        if(weather == 0 && trackCondition == 0) // sunny and dry
+        {
+            theHorse.setConfidence(theHorse.getConfidence() + 0.1);
+        }
+        else if(weather == 1 && trackCondition == 1) // rainy and wet
+        {
+            theHorse.setConfidence(theHorse.getConfidence() - 0.1);
+            chanceOfFalling= 0.15;
+        }
+        else if(weather == 2 && trackCondition == 2) // snowy and icy
+        {
+            theHorse.setConfidence(theHorse.getConfidence() - 0.2);
+            chanceOfFalling= 0.17;
+        }
+        else if(weather == 3 ) // windy 
+        {
+            theHorse.setConfidence(theHorse.getConfidence() - 0.05);
         }
     }
     
@@ -196,7 +221,7 @@ public class Race
             //the probability that the horse will fall is very small (max is 0.1)
             //but will also will depends exponentially on confidence 
             //so if you double the confidence, the probability that it will fall is *2
-            if (Math.random() < (0.1*theHorse.getConfidence()*theHorse.getConfidence()))
+            if (Math.random() < (chanceOfFalling*theHorse.getConfidence()*theHorse.getConfidence()))
             {
                 theHorse.fall();
                 //decrease confidence if the horse falls
