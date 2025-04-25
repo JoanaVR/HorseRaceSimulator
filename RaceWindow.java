@@ -32,7 +32,12 @@ public class RaceWindow {
                     for(int i = 0; i < info.numOfHorses; i++)
                     {
                         HorseInfo horseInfo = getHorseInfo(frame);
-                        race.addHorse(new Horse(horseInfo.horseSymbol, horseInfo.horseName, horseInfo.horseConfidence), i);
+                        Horse horse = new Horse(horseInfo.horseSymbol, horseInfo.horseName, horseInfo.horseConfidence);
+                        horse.setBreed(horseInfo.breed);
+                        horse.setColor(horseInfo.color);
+                        horse.setSaddle(horseInfo.hasSaddle);
+                        horse.setHorseShoes(horseInfo.hasHorseShoes);
+                        race.addHorse(horse, i);
                     }
                     panel = new RacePanel(race.getHorses(), race.getRaceLength());
                     race.setRacePanel(panel);
@@ -215,9 +220,9 @@ public class RaceWindow {
         private Horse[] horses;
         private int laneHeight = 50;
         private int lanePixelLength = 800;
-        private int trackLength;
+        private double trackLength;
 
-        public RacePanel(Horse[] horses, int trackLength) 
+        public RacePanel(Horse[] horses, double trackLength) 
         {
             this.horses = horses;
             setPreferredSize(new Dimension(lanePixelLength + 50, horses.length * laneHeight + 50));
@@ -245,12 +250,39 @@ public class RaceWindow {
                     Horse horse = horses[i];
 
                     // Calculate horse position
-                    double progress = horse.getDistanceTravelled() / (double) trackLength;
+                    double progress = horse.getDistanceTravelled() / trackLength;
                     int x = (int) (progress * lanePixelLength);
+
+                    if(horses[i].getColor().equals("Black"))
+                    {
+                        g.setColor(Color.BLACK);
+                    }
+                    else if(horses[i].getColor().equals("White"))
+                    {
+                        g.setColor(Color.WHITE);
+                    }
+                    else if(horses[i].getColor().equals("Brown"))
+                    {
+                        g.setColor(new Color(139, 69, 19)); // brown color
+                    }
+                    else if(horses[i].getColor().equals("Baige"))
+                    {
+                        g.setColor(new Color(245, 222, 179)); // beige color
+                    }
+                    else if(horses[i].getColor().equals("Multicoloured"))
+                    {
+                        g.setColor(Color.MAGENTA); // multicolored horse
+                    }
 
                     // Draw horse
                     g.drawString(horse.getSymbol(), x, y +20);
-                    //g.fillOval(x, y + 10, 30, 30);
+                    //print the horses name, confidence and speed 
+                    g.setColor(Color.BLACK);
+                    int infoX = lanePixelLength + 10;
+                    g.drawString(horse.getName(), infoX, y + 20);
+                    g.drawString("Confidence: " + horse.getConfidence(), infoX, y + 30);
+                    g.drawString("Speed: " + horse.getSpeed(), infoX, y + 40);
+
                 }
             }
         }

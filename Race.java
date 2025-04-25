@@ -10,7 +10,7 @@ import java.lang.Math;
  */
 public class Race
 {
-    private int raceLength;
+    private double raceLength;
     private Horse horses[];
     private RaceWindow.RacePanel panel;
     int weather = 0; // 0 - sunny, 1 - rainy, 2 - snowy, 3 - windy
@@ -33,7 +33,7 @@ public class Race
         trackCondition = (int)(Math.random()*3);
     }
 
-    public int getRaceLength()
+    public double getRaceLength()
     {
         return raceLength;
     }   
@@ -263,7 +263,7 @@ public class Race
     {
         System.out.print('\u000C');  //clear the terminal window
         
-        multiplePrint('=',raceLength+3); //top edge of track
+        multiplePrint('=',(int)raceLength+3); //top edge of track
         System.out.println();
 
         for(int i = 0; i < horses.length; i++)
@@ -271,7 +271,7 @@ public class Race
                 printLane(horses[i]);
                 System.out.println();
         }
-        multiplePrint('=',raceLength+3); //bottom edge of track
+        multiplePrint('=',(int)raceLength+3); //bottom edge of track
         System.out.println();    
     }
     
@@ -286,14 +286,14 @@ public class Race
         if(theHorse == null)
         {
             System.out.print('|');
-            multiplePrint(' ',raceLength+1);
+            multiplePrint(' ',(int)raceLength+1);
             System.out.print('|');
             return;
         }
         //calculate how many spaces are needed before
         //and after the horse
         int spacesBefore = theHorse.getDistanceTravelled();
-        int spacesAfter = raceLength - theHorse.getDistanceTravelled();
+        double spacesAfter = raceLength - theHorse.getDistanceTravelled();
         
         //print a | for the beginning of the lane
         System.out.print('|');
@@ -314,7 +314,7 @@ public class Race
         }
         
         //print the spaces after the horse
-        multiplePrint(' ',spacesAfter);
+        multiplePrint(' ',(int)spacesAfter);
         
         //print the | for the end of the track
         System.out.print('|');
