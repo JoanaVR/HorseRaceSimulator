@@ -12,10 +12,12 @@ public class Race
 {
     private double raceLength;
     private Horse horses[];
+    private int numOfHorses;
     private RaceWindow.RacePanel panel;
-    int weather = 0; // 0 - sunny, 1 - rainy, 2 - snowy, 3 - windy
-    int trackCondition = 0; // 0 - dry, 1 - wet, 2 - icy
-    double chanceOfFalling = 0.1; //chance of falling
+    private int weather = 0; // 0 - sunny, 1 - rainy, 2 - snowy, 3 - windy
+    private int trackCondition = 0; // 0 - dry, 1 - wet, 2 - icy
+    private double chanceOfFalling = 0.05; //chance of falling
+    private Horse winner = null;
 
     /**
      * Constructor for objects of class Race
@@ -31,6 +33,7 @@ public class Race
         //randomly set the weather and track condition
         weather = (int)(Math.random()*4);
         trackCondition = (int)(Math.random()*3);
+        this.numOfHorses = 0;
     }
 
     public double getRaceLength()
@@ -40,6 +43,22 @@ public class Race
     public Horse[] getHorses()
     {
         return horses;
+    }
+    public int getNumOfHorses()
+    {
+        return numOfHorses;
+    }
+    public int getWeather()
+    {
+        return weather;
+    }
+    public int getTrackCondition()
+    {
+        return trackCondition;
+    }
+    public Horse getWinner()
+    {
+        return winner;
     }
     
 
@@ -58,6 +77,7 @@ public class Race
         if(horses[laneNumber] == null)
         {
             horses[laneNumber] = theHorse;
+            this.numOfHorses++;
         }
         else if(laneNumber > 0 || laneNumber < horses.length)
         {
@@ -75,12 +95,12 @@ public class Race
         else if(weather == 1 && trackCondition == 1) // rainy and wet
         {
             theHorse.setConfidence(theHorse.getConfidence() - 0.1);
-            chanceOfFalling= 0.15;
+            chanceOfFalling= 0.08;
         }
         else if(weather == 2 && trackCondition == 2) // snowy and icy
         {
             theHorse.setConfidence(theHorse.getConfidence() - 0.2);
-            chanceOfFalling= 0.17;
+            chanceOfFalling= 0.1;
         }
         else if(weather == 3 ) // windy 
         {
@@ -173,6 +193,7 @@ public class Race
                 if (raceWonBy(horses[i]))
                 {
                     System.out.println(horses[i].getName() + " has won the race!");
+                    this.winner = horses[i];
                     return true;
                 }
             }
@@ -292,14 +313,14 @@ public class Race
         }
         //calculate how many spaces are needed before
         //and after the horse
-        int spacesBefore = theHorse.getDistanceTravelled();
+        double spacesBefore = theHorse.getDistanceTravelled();
         double spacesAfter = raceLength - theHorse.getDistanceTravelled();
         
         //print a | for the beginning of the lane
         System.out.print('|');
         
         //print the spaces before the horse
-        multiplePrint(' ',spacesBefore);
+        multiplePrint(' ',(int)spacesBefore);
         
         //if the horse has fallen then print dead
         //else print the horse's symbol

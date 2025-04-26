@@ -13,7 +13,7 @@ public class Horse
     private String mHorseName;
     private String mHorseSymbol;
     private double mHorseConfidence;
-    private int mDistanceTravelled;
+    private double mDistanceTravelled;
     private boolean mHasFallen;
     private double mHorseSpeed;
 
@@ -53,7 +53,7 @@ public class Horse
         return this.mHorseConfidence;
     }
     
-    public int getDistanceTravelled()
+    public double getDistanceTravelled()
     {
         return this.mDistanceTravelled;
     }
@@ -171,12 +171,13 @@ public class Horse
     public void goBackToStart()
     {
         this.mDistanceTravelled = 0;
+        this.mHasFallen = false;
     }
     
 
     public void moveForward()
     {
-        this.mDistanceTravelled = this.mDistanceTravelled + 1;
+        this.mDistanceTravelled = this.mDistanceTravelled + this.mHorseSpeed;
     }
     
 }

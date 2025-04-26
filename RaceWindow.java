@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 public class RaceWindow {
     JFrame frame;
     RacePanel panel;
+    Race currentRace;
 
     public RaceWindow() {
         frame = new JFrame("Horse Race Simulator");
@@ -29,6 +30,7 @@ public class RaceWindow {
                 if(info != null)
                 {
                     Race race = new Race(info.raceLength, info.numOfLanes);
+                    currentRace = race;
                     for(int i = 0; i < info.numOfHorses; i++)
                     {
                         HorseInfo horseInfo = getHorseInfo(frame);
@@ -40,9 +42,22 @@ public class RaceWindow {
                         race.addHorse(horse, i);
                     }
                     panel = new RacePanel(race.getHorses(), race.getRaceLength());
-                    race.setRacePanel(panel);
+                    currentRace.setRacePanel(panel);
                     frame.getContentPane().removeAll(); // clear previous contents
-                    frame.add(panel);
+                    frame.setLayout(new BorderLayout());
+                    frame.add(panel, BorderLayout.CENTER);
+                    JPanel buttonPanel = new JPanel();
+
+                    JButton rematchBtn = new JButton("Rematch");
+                    JButton addHorseBtn = new JButton("Rematch + New Horse");
+
+                    rematchBtn.addActionListener(event -> restartRace());
+                    addHorseBtn.addActionListener(event -> addHorseToRace());
+
+                    buttonPanel.add(rematchBtn);
+                    buttonPanel.add(addHorseBtn);
+                    frame.add(buttonPanel, BorderLayout.SOUTH);
+
                     frame.revalidate(); // refresh layout
                     frame.repaint();
 
@@ -56,17 +71,65 @@ public class RaceWindow {
 
         JMenuItem stats = new JMenuItem("Statistics");
         JMenuItem bets = new JMenuItem("Bets");
-        JMenuItem exit = new JMenuItem("Exit");
+       
         menu.add(start);
         menu.add(stats);
         menu.add(bets);
-        menu.add(exit);
         menubar.add(menu);
         frame.setJMenuBar(menubar);
         frame.setVisible(true);
 
     }
+    public void addHorseToRace()
+    {
+        if(currentRace != null)
+        {
+            if(currentRace.getNumOfHorses() < currentRace.getHorses().length)
+            {
+                addHorse();
+            }
+            else
+            {
+                Race r = new Race((int)currentRace.getRaceLength(), currentRace.getHorses().length + 1);
+                for(int i = 0; i < currentRace.getHorses().length; i++)
+                {
+                    r.addHorse(currentRace.getHorses()[i], i);
+                }
+                currentRace = r;
+                addHorse();
+                
+            }
+            
+            restartRace();
+        }
+    }
 
+    public void addHorse()
+    {
+        HorseInfo horseInfo = getHorseInfo(frame);
+        Horse horse = new Horse(horseInfo.horseSymbol, horseInfo.horseName, horseInfo.horseConfidence);
+        horse.setBreed(horseInfo.breed);
+        horse.setColor(horseInfo.color);
+        horse.setSaddle(horseInfo.hasSaddle);
+        horse.setHorseShoes(horseInfo.hasHorseShoes);
+        currentRace.addHorse(horse, currentRace.getNumOfHorses());
+    }
+    public void restartRace() 
+    {
+        if (currentRace != null) 
+        {
+            frame.getContentPane().remove(this.panel);  // Remove old race panel 
+            this.panel = new RacePanel(currentRace.getHorses(), currentRace.getRaceLength());
+            currentRace.setRacePanel(this.panel);
+            frame.add(this.panel, BorderLayout.CENTER);
+            frame.revalidate();
+            frame.repaint();
+    
+            Thread raceThread = new Thread(() -> currentRace.startRace());
+            raceThread.start();
+        }
+    }
+    
     //class to allow return of multiple values from askUser method
     static class RaceInfo
     {
@@ -87,8 +150,8 @@ public class RaceWindow {
         
         String[] units = {"metes", "yards", "miles"};
         String[] lengths = new String[]{"10", "30", "50"};
-        String[] lanes = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-        String[] horses = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+        String[] lanes = new String[]{"2", "3", "4", "5", "6", "7", "8", "9", "10"};
+        String[] horses = new String[]{"2", "3", "4", "5", "6", "7", "8", "9", "10"};
 
         JComboBox<String> jcunits = new JComboBox<>(units);
         JComboBox<String> jclength = new JComboBox<>(lengths);
@@ -157,8 +220,8 @@ public class RaceWindow {
     
     static HorseInfo getHorseInfo(JFrame parent) {
         
-        String[] name = {""};
-        String[] symbol = new String[]{""};
+        String[] name = {"Horse"};
+        String[] symbol = new String[]{"H"};
         String[] breed = new String[]{"Arabian Horse", "Shire Horse", "Appaloosa", "Thoroughbred", "Clydesdale"};
         String[] colour = new String[]{"Black", "White", "Brown", "Baige", "Multicoloured"};
         String[] saddle = new String[]{"false", "true"};
@@ -230,7 +293,8 @@ public class RaceWindow {
         }
 
         @Override
-        protected void paintComponent(Graphics g) {
+        protected void paintComponent(Graphics g) 
+        {
             super.paintComponent(g);
 
             for (int i = 0; i < horses.length; i++) 
@@ -283,7 +347,27 @@ public class RaceWindow {
                     g.drawString("Confidence: " + horse.getConfidence(), infoX, y + 30);
                     g.drawString("Speed: " + horse.getSpeed(), infoX, y + 40);
 
+                    // if(getWinner() != null)
+                    // {
+                    //     g.setColor(Color.RED);
+                    //     g.drawString("Winner!", x, y + 40);
+                    // }
+                    // else if(horses[i].hasFallen())
+                    // {
+                    //     g.setColor(Color.RED);
+                    //     g.drawString("Fallen!", x, y + 40);
+                    // }
+                    // else if(horses[i].getDistanceTravelled() >= trackLength)
+                    // {
+                    //     g.setColor(Color.GREEN);
+                    //     g.drawString("Finished!", x, y + 40);
+                    // }
+
                 }
+                //showt he weather and the track conditions:
+                g.setColor(Color.BLACK);
+                g.drawString("Weather: " + currentRace.getWeather(), 10, horses.length * laneHeight + 20);
+                g.drawString("Track Conditions: " + currentRace.getTrackCondition(), 10, horses.length * laneHeight + 40);
             }
         }
     }
