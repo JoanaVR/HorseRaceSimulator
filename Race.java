@@ -17,7 +17,6 @@ public class Race
     private int weather = 0; // 0 - sunny, 1 - rainy, 2 - snowy, 3 - windy
     private int trackCondition = 0; // 0 - dry, 1 - wet, 2 - icy
     private double chanceOfFalling = 0.05; //chance of falling
-    private Horse winner = null;
 
     /**
      * Constructor for objects of class Race
@@ -56,11 +55,6 @@ public class Race
     {
         return trackCondition;
     }
-    public Horse getWinner()
-    {
-        return winner;
-    }
-    
 
     public void setRacePanel(RaceWindow.RacePanel panel) {
         this.panel = panel;
@@ -175,6 +169,25 @@ public class Race
             if ( raceFinished()) 
             {
                 finished = true;
+                for(int i = 0; i < horses.length; i++)
+                {
+                    String weather = "";
+                    String trackCondition = "";
+                    switch (this.weather) 
+                    {
+                        case 0 -> weather = "sunny";
+                        case 1 -> weather = "rainy"; 
+                        case 2 -> weather = "snowy"; 
+                        case 3 -> weather = "windy"; 
+                    }
+                    switch (this.trackCondition) 
+                    {
+                        case 0 -> trackCondition = "dry";
+                        case 1 -> trackCondition = "wet"; 
+                        case 2 -> trackCondition = "icy"; 
+                    }
+                    horses[i].getHorseStats().addRace(horses[i].isWinner(), horses[i].getSpeed(), horses[i].getDistanceTravelled()/horses[i].getSpeed(), horses[i].getConfidence(), trackCondition, weather);
+                }
             }
             //wait for 100 milliseconds
             try{ 
@@ -193,7 +206,7 @@ public class Race
                 if (raceWonBy(horses[i]))
                 {
                     System.out.println(horses[i].getName() + " has won the race!");
-                    this.winner = horses[i];
+                    horses[i].setWinner(true);
                     return true;
                 }
             }

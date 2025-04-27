@@ -22,7 +22,9 @@ public class Horse
     private boolean mHasSaddle;
     private boolean mHasHorseShoes;
 
-    
+    private boolean winner = false;
+
+    HorseStats horseStats = new HorseStats(); 
     
       
     //Constructor of class Horse
@@ -48,6 +50,11 @@ public class Horse
     
     
     //getter methods
+
+    public HorseStats getHorseStats()
+    {
+        return horseStats;
+    }
     public double getConfidence()
     {
         return this.mHorseConfidence;
@@ -91,13 +98,20 @@ public class Horse
     {
         return this.mHasHorseShoes;
     }
+    public boolean isWinner()
+    {
+        return this.winner;
+    }
     
     //setter methods
     public void fall()
     {
         this.mHasFallen = true;
     }
-
+    public void setWinner(boolean newWinner)
+    {
+        this.winner = newWinner;
+    }
     public void setConfidence(double newConfidence)
     {
         if(newConfidence >= 0 && newConfidence <= 1)

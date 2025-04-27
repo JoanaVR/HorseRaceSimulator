@@ -70,6 +70,42 @@ public class RaceWindow {
         });
 
         JMenuItem stats = new JMenuItem("Statistics");
+        stats.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {
+                //stats of the horses if there has been a race
+                if(currentRace == null)
+                {
+                    JOptionPane.showMessageDialog(frame, "There hasnt been a race yet");
+                }
+                else
+                {
+                    //get the stats for the horses and show them in a message dialog
+                    StringBuilder statsMessage = new StringBuilder("Horse Statistics:\n");
+                    for (Horse horse : currentRace.getHorses()) 
+                    {
+                        if(horse != null)
+                        {
+                            HorseStats horseStats = horse.getHorseStats();
+                            statsMessage.append("Name: ").append(horse.getName()).append("\n")
+                                    .append("Symbol: ").append(horse.getSymbol()).append("\n")
+                                    .append("Average Confidence: ").append(horseStats.getAverageConfidence()).append("\n")
+                                    .append("Confidence Change: ").append(horseStats.getConfidenceChange()).append("\n")
+                                    .append("Average Speed: ").append(horseStats.getAverageSpeed()).append("\n")
+                                    .append("Average Finish Time: ").append(horseStats.getAverageFinishTime()).append("\n")
+                                    .append("Number of Races: ").append(horseStats.getNumberOfRaces()).append("\n")
+                                    .append("Number of Wins: ").append(horseStats.getNumberOfWins()).append("\n")
+                                    .append("Win Percentage: ").append(horseStats.getWinPercentage()).append("\n\n");
+                        }
+                    }
+                    JOptionPane.showMessageDialog(frame, statsMessage.toString(), "Horse Statistics", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+            
+        });
+
         JMenuItem bets = new JMenuItem("Bets");
        
         menu.add(start);
@@ -80,44 +116,66 @@ public class RaceWindow {
         frame.setVisible(true);
 
     }
+
+    //adding a new horse to the race and starting it
     public void addHorseToRace()
     {
+        
         if(currentRace != null)
         {
+            //if there is space for the horse add it 
             if(currentRace.getNumOfHorses() < currentRace.getHorses().length)
             {
                 addHorse();
+                restartRace();
             }
+            //if there isnt space make a new race with enough space for the new horse and the old horses
             else
             {
+                //remeber the old race in case the user cancels the new horse
+                Race temp = currentRace;
                 Race r = new Race((int)currentRace.getRaceLength(), currentRace.getHorses().length + 1);
                 for(int i = 0; i < currentRace.getHorses().length; i++)
                 {
                     r.addHorse(currentRace.getHorses()[i], i);
                 }
                 currentRace = r;
-                addHorse();
-                
+                if(addHorse() == false)
+                {
+                    currentRace = temp;
+                }
+                else
+                     restartRace();
             }
             
-            restartRace();
+            
         }
     }
 
-    public void addHorse()
+    public boolean addHorse()
     {
         HorseInfo horseInfo = getHorseInfo(frame);
+        if(horseInfo == null)
+        {
+            return false;
+        }
         Horse horse = new Horse(horseInfo.horseSymbol, horseInfo.horseName, horseInfo.horseConfidence);
         horse.setBreed(horseInfo.breed);
         horse.setColor(horseInfo.color);
         horse.setSaddle(horseInfo.hasSaddle);
         horse.setHorseShoes(horseInfo.hasHorseShoes);
         currentRace.addHorse(horse, currentRace.getNumOfHorses());
+        return true;
     }
     public void restartRace() 
     {
         if (currentRace != null) 
         {
+            for(int i = 0; i < currentRace.getHorses().length; i++)
+            {
+                if(currentRace.getHorses()[i] != null)
+                    currentRace.getHorses()[i].setWinner(false);
+            }
             frame.getContentPane().remove(this.panel);  // Remove old race panel 
             this.panel = new RacePanel(currentRace.getHorses(), currentRace.getRaceLength());
             currentRace.setRacePanel(this.panel);
@@ -339,7 +397,13 @@ public class RaceWindow {
                     }
 
                     // Draw horse
-                    g.drawString(horse.getSymbol(), x, y +20);
+                    if(horses[i].hasFallen())
+                    {
+                        g.setColor(Color.RED);
+                        g.drawString("❌", x, y +20);
+                    }
+                    else
+                        g.drawString(horse.getSymbol(), x, y +20);
                     //print the horses name, confidence and speed 
                     g.setColor(Color.BLACK);
                     int infoX = lanePixelLength + 10;
@@ -347,22 +411,12 @@ public class RaceWindow {
                     g.drawString("Confidence: " + horse.getConfidence(), infoX, y + 30);
                     g.drawString("Speed: " + horse.getSpeed(), infoX, y + 40);
 
-                    // if(getWinner() != null)
-                    // {
-                    //     g.setColor(Color.RED);
-                    //     g.drawString("Winner!", x, y + 40);
-                    // }
-                    // else if(horses[i].hasFallen())
-                    // {
-                    //     g.setColor(Color.RED);
-                    //     g.drawString("Fallen!", x, y + 40);
-                    // }
-                    // else if(horses[i].getDistanceTravelled() >= trackLength)
-                    // {
-                    //     g.setColor(Color.GREEN);
-                    //     g.drawString("Finished!", x, y + 40);
-                    // }
-
+                    if(horses[i].isWinner())
+                    {
+                        g.setColor(Color.RED);
+                        String message = "Winner! " + horses[i].getName() + " has won the race!";
+                        g.drawString(message ,10, horses.length * laneHeight + 80);
+                    }
                 }
                 //showt he weather and the track conditions:
                 g.setColor(Color.BLACK);
