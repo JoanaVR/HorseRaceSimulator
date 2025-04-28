@@ -1,3 +1,4 @@
+package src;
 
 /**
  *The class Horse Contains information about the horses including their name, symbol and others. 
@@ -192,6 +193,10 @@ public class Horse
     public void moveForward()
     {
         this.mDistanceTravelled = this.mDistanceTravelled + this.mHorseSpeed;
+    }
+    public void moveForwardOne()
+    {
+        this.mDistanceTravelled = this.mDistanceTravelled + 1;
     }
     
 }

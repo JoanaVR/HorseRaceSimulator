@@ -1,4 +1,8 @@
+package src;
 import java.util.concurrent.TimeUnit;
+
+import src.RaceWindow.RacePanel;
+
 import java.lang.Math;
 
 /**
@@ -13,7 +17,7 @@ public class Race
     private double raceLength;
     private Horse horses[];
     private int numOfHorses;
-    private RaceWindow.RacePanel panel;
+    private RaceWindow.RacePanel panel = null;
     private int weather = 0; // 0 - sunny, 1 - rainy, 2 - snowy, 3 - windy
     private int trackCondition = 0; // 0 - dry, 1 - wet, 2 - icy
     private double chanceOfFalling = 0.05; //chance of falling
@@ -160,14 +164,18 @@ public class Race
             }
                         
             //print the race positions
-            printRace();
-            if (panel != null) {
+            
+            if (panel != null) 
+            {
                 panel.repaint();
             }
+            else
+                printRace();
             
             //if any of the three horses has won the race is finished
             if ( raceFinished()) 
             {
+                printRace();
                 finished = true;
                 for(int i = 0; i < horses.length; i++)
                 {
@@ -249,7 +257,10 @@ public class Race
             //the probability that the horse will move forward depends on the confidence;
             if (Math.random() < theHorse.getConfidence())
             {
-               theHorse.moveForward();
+                if(panel != null)
+                    theHorse.moveForward();
+                else
+                    theHorse.moveForwardOne();
             }
             
             //the probability that the horse will fall is very small (max is 0.1)
@@ -302,8 +313,8 @@ public class Race
 
         for(int i = 0; i < horses.length; i++)
         {
-                printLane(horses[i]);
-                System.out.println();
+            printLane(horses[i]);
+            System.out.println();
         }
         multiplePrint('=',(int)raceLength+3); //bottom edge of track
         System.out.println();    

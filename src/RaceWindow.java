@@ -1,4 +1,10 @@
+package src;
 import javax.swing.*;
+
+import src.Race;
+import src.HorseStats;
+import src.Horse;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
